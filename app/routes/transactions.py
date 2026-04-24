@@ -31,13 +31,11 @@ def index():
     # Totales del mes actual
     today = date.today()
     monthly = db.session.query(
-        Transaction.type,
-        func.sum(Transaction.amount).label("total")
-    ).filter(
-        Transaction.user_id == current_user.id,
-        func.month(Transaction.date) == today.month,
-        func.year(Transaction.date) == today.year,
-    ).group_by(Transaction.type).all()
+    Transaction.type,
+    func.sum(Transaction.amount).label("total")).filter(
+    Transaction.user_id == current_user.id,
+    func.extract("month", Transaction.date) == today.month,
+    func.extract("year", Transaction.date) == today.year,).group_by(Transaction.type).all()
 
     totals = {"income": 0, "expense": 0}
     for row in monthly:

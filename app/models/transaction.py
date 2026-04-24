@@ -11,7 +11,7 @@ class Transaction(db.Model):
     account_id = db.Column(db.String(36), db.ForeignKey("accounts.id"), nullable=False)
     category_id = db.Column(db.String(36), db.ForeignKey("categories.id"), nullable=False)
     amount = db.Column(db.Numeric(10, 2), nullable=False)
-    type = db.Column(db.Enum("income", "expense"), nullable=False)
+    type = db.Column(db.Enum("income", "expense", name="transaction_type"), nullable=False)
     description = db.Column(db.Text, nullable=True)
     date = db.Column(db.Date, default=date.today)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)

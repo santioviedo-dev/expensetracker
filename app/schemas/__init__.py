@@ -4,6 +4,7 @@ from app.models.account import Account
 from app.models.category import Category
 from app.models.transaction import Transaction
 from marshmallow import fields, validate, validates, ValidationError
+from marshmallow import fields, validate, validates, ValidationError, EXCLUDE
 
 
 # ── User ──────────────────────────────────────────────
@@ -57,12 +58,12 @@ class TransactionSchema(ma.SQLAlchemyAutoSchema):
         model = Transaction
         load_instance = True
         exclude = ("user_id",)
+        unknown = EXCLUDE  # agregá esta línea
 
     amount = fields.Decimal(required=True, as_string=True, validate=validate.Range(min=0.01))
     type = fields.String(required=True, validate=validate.OneOf(["income", "expense"]))
     date = fields.Date(required=True)
 
-    # Datos anidados para mostrar en las respuestas
     account = fields.Nested(AccountSchema, dump_only=True)
     category = fields.Nested(CategorySchema, dump_only=True)
 

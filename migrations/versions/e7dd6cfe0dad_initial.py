@@ -1,8 +1,8 @@
 """initial
 
-Revision ID: f36044ba6eeb
+Revision ID: e7dd6cfe0dad
 Revises: 
-Create Date: 2026-04-24 09:18:34.676429
+Create Date: 2026-04-24 10:19:50.755131
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'f36044ba6eeb'
+revision = 'e7dd6cfe0dad'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -38,7 +38,7 @@ def upgrade():
     sa.Column('id', sa.String(length=36), nullable=False),
     sa.Column('user_id', sa.String(length=36), nullable=False),
     sa.Column('name', sa.String(length=100), nullable=False),
-    sa.Column('type', sa.Enum('income', 'expense'), nullable=False),
+    sa.Column('type', sa.Enum('income', 'expense', name='category_type'), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -48,7 +48,7 @@ def upgrade():
     sa.Column('account_id', sa.String(length=36), nullable=False),
     sa.Column('category_id', sa.String(length=36), nullable=False),
     sa.Column('amount', sa.Numeric(precision=10, scale=2), nullable=False),
-    sa.Column('type', sa.Enum('income', 'expense'), nullable=False),
+    sa.Column('type', sa.Enum('income', 'expense', name='transaction_type'), nullable=False),
     sa.Column('description', sa.Text(), nullable=True),
     sa.Column('date', sa.Date(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=True),
