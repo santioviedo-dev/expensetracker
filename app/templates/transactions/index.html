@@ -1,0 +1,93 @@
+{% extends "shared/base.html" %}
+{% block title %}Transacciones{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+  <h1 class="text-2xl font-bold">Transacciones</h1>
+  <a href="{{ url_for('transactions.create') }}" class="btn-primary">+ Nueva</a>
+</div>
+
+<!-- Resumen del mes -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+  <div class="rounded-xl bg-green-600 text-white p-5">
+    <p class="text-sm text-green-100 mb-1">Ingresos del mes</p>
+    <p class="text-2xl font-bold">${{ "%.2f"|format(totals.income) }}</p>
+  </div>
+  <div class="rounded-xl bg-red-500 text-white p-5">
+    <p class="text-sm text-red-100 mb-1">Gastos del mes</p>
+    <p class="text-2xl font-bold">${{ "%.2f"|format(totals.expense) }}</p>
+  </div>
+  <div class="rounded-xl p-5 {{ 'bg-blue-600' if totals.balance >= 0 else 'bg-yellow-500' }} text-white">
+    <p class="text-sm opacity-80 mb-1">Balance</p>
+    <p class="text-2xl font-bold">${{ "%.2f"|format(totals.balance) }}</p>
+  </div>
+</div>
+
+<!-- Filtros -->
+<form class="flex flex-wrap gap-2 mb-4" method="GET">
+  <select name="type" class="input w-auto">
+    <option value="">Todos los tipos</option>
+    <option value="income" {{ 'selected' if type_filter == 'income' }}>Ingresos</option>
+    <option value="expense" {{ 'selected' if type_filter == 'expense' }}>Gastos</option>
+  </select>
+  <select name="account_id" class="input w-auto">
+    <option value="">Todas las cuentas</option>
+    {% for acc in accounts %}
+      <option value="{{ acc.id }}" {{ 'selected' if account_filter == acc.id }}>{{ acc.name }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit" class="btn-secondary">Filtrar</button>
+  <a href="{{ url_for('transactions.index') }}" class="btn-ghost">Limpiar</a>
+</form>
+
+<!-- Tabla -->
+{% if transactions %}
+<div class="card p-0 overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-gray-50 border-b border-gray-100">
+      <tr>
+        <th class="text-left px-4 py-3 font-semibold text-gray-500 uppercase text-xs tracking-wide">Fecha</th>
+        <th class="text-left px-4 py-3 font-semibold text-gray-500 uppercase text-xs tracking-wide">Descripción</th>
+        <th class="text-left px-4 py-3 font-semibold text-gray-500 uppercase text-xs tracking-wide">Categoría</th>
+        <th class="text-left px-4 py-3 font-semibold text-gray-500 uppercase text-xs tracking-wide">Cuenta</th>
+        <th class="text-left px-4 py-3 font-semibold text-gray-500 uppercase text-xs tracking-wide">Tipo</th>
+        <th class="text-right px-4 py-3 font-semibold text-gray-500 uppercase text-xs tracking-wide">Monto</th>
+        <th class="px-4 py-3"></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-50">
+      {% for t in transactions %}
+      <tr class="hover:bg-gray-50 transition">
+        <td class="px-4 py-3 text-gray-500">{{ t.date.strftime('%d/%m/%Y') }}</td>
+        <td class="px-4 py-3">{{ t.description or '—' }}</td>
+        <td class="px-4 py-3">{{ t.category.name }}</td>
+        <td class="px-4 py-3">{{ t.account.name }}</td>
+        <td class="px-4 py-3">
+          {% if t.type == 'income' %}
+            <span class="badge-income">Ingreso</span>
+          {% else %}
+            <span class="badge-expense">Gasto</span>
+          {% endif %}
+        </td>
+        <td class="px-4 py-3 text-right font-semibold {{ 'text-green-600' if t.type == 'income' else 'text-red-500' }}">
+          {{ '+' if t.type == 'income' else '-' }}${{ "%.2f"|format(t.amount) }}
+        </td>
+        <td class="px-4 py-3 text-right flex items-center justify-end gap-1">
+          <a href="{{ url_for('transactions.edit', transaction_id=t.id) }}" class="btn-ghost px-2 py-1 text-xs">✏️</a>
+          <form method="POST" action="{{ url_for('transactions.delete', transaction_id=t.id) }}" class="inline"
+                onsubmit="return confirm('¿Eliminar esta transacción?')">
+            <button type="submit" class="btn-danger px-2 py-1 text-xs">🗑</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="card text-center text-gray-400 py-12">
+  No hay transacciones todavía.
+  <a href="{{ url_for('transactions.create') }}" class="block mt-2 text-green-600 hover:underline">Agregá la primera</a>
+</div>
+{% endif %}
+{% endblock %}

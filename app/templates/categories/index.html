@@ -1,0 +1,46 @@
+{% extends "shared/base.html" %}
+{% block title %}Categorías{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+  <h1 class="text-2xl font-bold">Categorías</h1>
+  <a href="{{ url_for('categories.create') }}" class="btn-primary">+ Nueva</a>
+</div>
+
+{% if categories %}
+<div class="card p-0 overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-gray-50 border-b border-gray-100">
+      <tr>
+        <th class="text-left px-4 py-3 font-semibold text-gray-500 uppercase text-xs tracking-wide">Nombre</th>
+        <th class="text-left px-4 py-3 font-semibold text-gray-500 uppercase text-xs tracking-wide">Tipo</th>
+        <th class="px-4 py-3"></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-50">
+      {% for cat in categories %}
+      <tr class="hover:bg-gray-50 transition">
+        <td class="px-4 py-3 font-medium">{{ cat.name }}</td>
+        <td class="px-4 py-3">
+          {% if cat.type == 'income' %}
+            <span class="badge-income">Ingreso</span>
+          {% else %}
+            <span class="badge-expense">Gasto</span>
+          {% endif %}
+        </td>
+        <td class="px-4 py-3 text-right flex items-center justify-end gap-1">
+          <a href="{{ url_for('categories.edit', category_id=cat.id) }}" class="btn-ghost px-2 py-1 text-xs">✏️</a>
+          <form method="POST" action="{{ url_for('categories.delete', category_id=cat.id) }}" class="inline"
+                onsubmit="return confirm('¿Eliminar esta categoría?')">
+            <button type="submit" class="btn-danger px-2 py-1 text-xs">🗑</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="card text-center text-gray-400 py-12">No hay categorías todavía.</div>
+{% endif %}
+{% endblock %}

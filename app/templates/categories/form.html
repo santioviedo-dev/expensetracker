@@ -1,0 +1,28 @@
+{% extends "shared/base.html" %}
+{% block title %}{{ 'Editar' if category else 'Nueva' }} categoría{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto">
+  <h1 class="text-2xl font-bold mb-6">{{ 'Editar' if category else 'Nueva' }} categoría</h1>
+  <div class="card">
+    <form method="POST" class="space-y-4">
+      <div>
+        <label class="label">Nombre *</label>
+        <input type="text" name="name" class="input" required maxlength="100"
+               value="{{ category.name if category else '' }}" autofocus/>
+      </div>
+      <div>
+        <label class="label">Tipo *</label>
+        <select name="type" class="input" required>
+          <option value="expense" {{ 'selected' if category and category.type == 'expense' }}>Gasto</option>
+          <option value="income"  {{ 'selected' if category and category.type == 'income' }}>Ingreso</option>
+        </select>
+      </div>
+      <div class="flex gap-3 pt-2">
+        <button type="submit" class="btn-primary">Guardar</button>
+        <a href="{{ url_for('categories.index') }}" class="btn-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
